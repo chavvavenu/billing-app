@@ -3,6 +3,8 @@ import Section from "./Section";
 import { SelectInput, SmallButton, TextInput } from "./Inputs";
 import { billsToCSV, downloadText } from "../utils/csv";
 import { money, toNumber, todayISO } from "../utils/format";
+import { generateInvoicePDF } from "../utils/invoicePdf";
+
 
 const PRODUCTS = [
   { id: "bottle_1l", name: "Plastic Bottle 1 Liter" },
@@ -266,9 +268,9 @@ export default function Bills({ data, setData }) {
             </div>
           </div>
 
-          <div className="overflow-auto rounded-xl border border-gray-200">
-            <table className="min-w-full text-sm">
-              <thead className="bg-gray-50">
+          <div className="overflow-auto rounded-2xl border border-gray-200">
+          <table className="min-w-full text-sm">
+            <thead className="bg-gray-50 sticky top-0 z-10">
                 <tr className="text-left">
                   <th className="p-3 font-semibold">Date</th>
                   <th className="p-3 font-semibold">Customer</th>
@@ -291,7 +293,7 @@ export default function Bills({ data, setData }) {
                   </tr>
                 ) : (
                   billsComputed.map((b) => (
-                    <tr key={b.id} className="border-t border-gray-200">
+                      <tr className="border-t border-gray-100 hover:bg-gray-50">
                       <td className="p-3 whitespace-nowrap">{b.date}</td>
                       <td className="p-3">{b.customerName}</td>
                       <td className="p-3">{b.productName}</td>
@@ -320,6 +322,72 @@ export default function Bills({ data, setData }) {
                           <SmallButton variant="danger" onClick={() => deleteBill(b.id)}>
                             Delete
                           </SmallButton>
+                          <SmallButton
+  onClick={() => {
+    const amount = (b.quantity || 0) * (b.unitPrice || 0);
+
+    // Example: CGST 9% + SGST 9% (edit if needed)
+    const cgstRate = 9;
+    const sgstRate = 9;
+    const cgstAmount = (amount * cgstRate) / 100;
+    const sgstAmount = (amount * sgstRate) / 100;
+    const totalTax = cgstAmount + sgstAmount;
+    const freight = b.freight || 0;
+    const totalAmount = amount + totalTax + freight;
+
+    generateInvoicePDF({
+      company: {
+        name: "KSP POLYMERS",
+        address1: "Plot No 233, Sy No: 682,693 to",
+        address2: "697,699,701,702,704 to 709,711 to 717",
+        address3: "TIF MSME Green Industrial Park, Dandu Malkapur(V)",
+        address4: "Choutuppal (M), Yadadri(D), Telangana - 508252",
+        gst: "36BEUPC7238H1Z5",
+        bankAccountName: "KSP POLYMERS",
+        bankName: "UNION BANK",
+        branch: "KOTHAPET",
+        ifsc: "UBIN0810925",
+        accountNo: "0192110100000186",
+      },
+      invoice: {
+        invoiceNo: b.invoiceNumber || `INV-${b.id?.slice(0, 6)}`,
+        invoiceDate: b.date,
+        deliveryDate: b.date,
+        amount,
+        totalAmount,
+      },
+      billTo: {
+        name: b.customerName,
+        address1: b.billToAddress1 || "",
+        address2: b.billToAddress2 || "",
+        cityStateZip: b.billToCityStateZip || "",
+        gst: b.billToGst || "",
+      },
+      shipTo: {
+        name: b.customerName,
+        address1: b.shipToAddress1 || "",
+        address2: b.shipToAddress2 || "",
+        cityStateZip: b.shipToCityStateZip || "",
+      },
+      items: [
+        {
+          item: b.itemCode || "JB",
+          description: b.description || b.productName,
+          hsn: b.hsn || "",
+          qty: b.quantity,
+          rate: b.unitPrice,
+          amount,
+        },
+      ],
+      tax: { cgstRate, sgstRate, cgstAmount, sgstAmount, totalTax },
+      freight,
+      vehicleNo: b.vehicleNo || "",
+    });
+  }}
+>
+  PDF Invoice
+</SmallButton>
+
                         </div>
                       </td>
                     </tr>

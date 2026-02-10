@@ -9,7 +9,8 @@ export function TextInput({ label, value, onChange, placeholder, type = "text" }
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-xl border border-gray-200 px-3 py-2 outline-none focus:ring-2 focus:ring-black/10"
+        className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none
+                   focus:ring-4 focus:ring-gray-900/10 focus:border-gray-300 bg-white"
       />
     </label>
   );
@@ -22,7 +23,8 @@ export function SelectInput({ label, value, onChange, options }) {
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-xl border border-gray-200 px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white"
+        className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none
+                   focus:ring-4 focus:ring-gray-900/10 focus:border-gray-300 bg-white"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>
@@ -35,19 +37,18 @@ export function SelectInput({ label, value, onChange, options }) {
 }
 
 export function SmallButton({ children, onClick, variant = "default" }) {
-  const cls =
-    variant === "danger"
-      ? "border-red-200 hover:bg-red-50 text-red-700"
-      : variant === "primary"
-      ? "border-black bg-black text-white hover:opacity-90"
-      : "border-gray-200 hover:bg-gray-50 text-gray-800";
+  const base =
+    "px-4 py-2.5 rounded-xl text-sm font-semibold transition active:scale-[0.98]";
+
+  const styles =
+    variant === "primary"
+      ? "bg-gray-900 text-white hover:bg-black shadow-sm"
+      : variant === "danger"
+      ? "bg-red-600 text-white hover:bg-red-700 shadow-sm"
+      : "bg-white text-gray-800 border border-gray-200 hover:bg-gray-50";
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`px-3 py-2 rounded-xl text-sm font-medium border ${cls}`}
-    >
+    <button type="button" onClick={onClick} className={`${base} ${styles}`}>
       {children}
     </button>
   );

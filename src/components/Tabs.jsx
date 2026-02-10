@@ -1,15 +1,15 @@
 import React from "react";
 
-function TabButton({ active, onClick, children }) {
+function Tab({ active, onClick, children }) {
   return (
     <button
       onClick={onClick}
       type="button"
       className={[
-        "px-3 py-2 rounded-xl text-sm font-medium border",
+        "px-4 py-2 rounded-full text-sm font-semibold transition",
         active
-          ? "bg-black text-white border-black"
-          : "bg-white text-gray-800 border-gray-200 hover:bg-gray-50",
+          ? "bg-gray-900 text-white shadow"
+          : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50",
       ].join(" ")}
     >
       {children}
@@ -19,16 +19,16 @@ function TabButton({ active, onClick, children }) {
 
 export default function Tabs({ activeTab, setActiveTab }) {
   return (
-    <div className="flex gap-2 mt-4">
-      <TabButton active={activeTab === "bills"} onClick={() => setActiveTab("bills")}>
-        Daily Bills + Invoices
-      </TabButton>
-      <TabButton active={activeTab === "expenses"} onClick={() => setActiveTab("expenses")}>
-        Daily Expense Sheet
-      </TabButton>
-      <TabButton active={activeTab === "domain"} onClick={() => setActiveTab("domain")}>
-        Purchase Domain URL
-      </TabButton>
+    <div className="flex flex-wrap gap-2">
+      <Tab active={activeTab === "bills"} onClick={() => setActiveTab("bills")}>
+        Bills
+      </Tab>
+      <Tab active={activeTab === "expenses"} onClick={() => setActiveTab("expenses")}>
+        Expenses
+      </Tab>
+      <Tab active={activeTab === "domain"} onClick={() => setActiveTab("domain")}>
+        Domain
+      </Tab>
     </div>
   );
 }

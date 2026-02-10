@@ -24,7 +24,7 @@ export default function App() {
   }, [data]);
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+<div className="min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-900">
       <div className="max-w-6xl mx-auto px-4 py-6 md:py-10">
         <header className="mb-6 md:mb-10">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
@@ -55,6 +55,23 @@ export default function App() {
               </div>
             </div>
           </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
+  <div className="rounded-2xl bg-white border border-gray-200 p-4 shadow-sm">
+    <div className="text-xs font-semibold text-gray-500">Total Sales</div>
+    <div className="text-2xl font-bold mt-1">{money(snapshot.salesAll)}</div>
+  </div>
+
+  <div className="rounded-2xl bg-white border border-gray-200 p-4 shadow-sm">
+    <div className="text-xs font-semibold text-gray-500">Total Expenses</div>
+    <div className="text-2xl font-bold mt-1">{money(snapshot.expensesAll)}</div>
+  </div>
+
+  <div className="rounded-2xl bg-white border border-gray-200 p-4 shadow-sm">
+    <div className="text-xs font-semibold text-gray-500">Net Profit</div>
+    <div className="text-2xl font-bold mt-1">{money(snapshot.net)}</div>
+  </div>
+</div>
+
 
           <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
         </header>
