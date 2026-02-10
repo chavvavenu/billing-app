@@ -4,7 +4,7 @@ import { SelectInput, SmallButton, TextInput } from "./Inputs";
 import { billsToCSV, downloadText } from "../utils/csv";
 import { money, toNumber, todayISO } from "../utils/format";
 import { generateInvoicePDF } from "../utils/invoicePdf";
-
+import { Badge } from "./AppShell";
 
 const PRODUCTS = [
   { id: "bottle_1l", name: "Plastic Bottle 1 Liter" },
@@ -43,9 +43,15 @@ export default function Bills({ data, setData }) {
     if (q) {
       filtered = filtered.filter((b) => {
         return (
-          String(b.customerName || "").toLowerCase().includes(q) ||
-          String(b.productName || "").toLowerCase().includes(q) ||
-          String(b.invoiceNumber || "").toLowerCase().includes(q)
+          String(b.customerName || "")
+            .toLowerCase()
+            .includes(q) ||
+          String(b.productName || "")
+            .toLowerCase()
+            .includes(q) ||
+          String(b.invoiceNumber || "")
+            .toLowerCase()
+            .includes(q)
         );
       });
     }
@@ -57,7 +63,10 @@ export default function Bills({ data, setData }) {
   }, [data.bills, billSearch, billDateFrom, billDateTo]);
 
   const totals = useMemo(() => {
-    const totalSales = billsComputed.reduce((sum, b) => sum + (b.total || 0), 0);
+    const totalSales = billsComputed.reduce(
+      (sum, b) => sum + (b.total || 0),
+      0
+    );
     const paid = billsComputed
       .filter((b) => b.paymentStatus === "Paid")
       .reduce((sum, b) => sum + (b.total || 0), 0);
@@ -80,7 +89,8 @@ export default function Bills({ data, setData }) {
   }
 
   function upsertBill() {
-    const product = PRODUCTS.find((p) => p.id === billForm.productId) || PRODUCTS[0];
+    const product =
+      PRODUCTS.find((p) => p.id === billForm.productId) || PRODUCTS[0];
 
     const payload = {
       id: billForm.id ?? crypto.randomUUID(),
@@ -128,7 +138,10 @@ export default function Bills({ data, setData }) {
 
   function deleteBill(id) {
     if (!confirm("Delete this bill?")) return;
-    setData((prev) => ({ ...prev, bills: prev.bills.filter((b) => b.id !== id) }));
+    setData((prev) => ({
+      ...prev,
+      bills: prev.bills.filter((b) => b.id !== id),
+    }));
   }
 
   function exportBillsCSV() {
@@ -217,7 +230,9 @@ export default function Bills({ data, setData }) {
           <div className="md:col-span-2 rounded-xl bg-gray-50 border border-gray-200 p-3">
             <div className="text-xs text-gray-500">Bill Total</div>
             <div className="text-xl font-bold">
-              {money(toNumber(billForm.quantity) * toNumber(billForm.unitPrice))}
+              {money(
+                toNumber(billForm.quantity) * toNumber(billForm.unitPrice)
+              )}
             </div>
           </div>
         </div>
@@ -247,14 +262,28 @@ export default function Bills({ data, setData }) {
               value={billSearch}
               onChange={setBillSearch}
             />
-            <TextInput label="From Date" type="date" value={billDateFrom} onChange={setBillDateFrom} />
-            <TextInput label="To Date" type="date" value={billDateTo} onChange={setBillDateTo} />
+            <TextInput
+              label="From Date"
+              type="date"
+              value={billDateFrom}
+              onChange={setBillDateFrom}
+            />
+            <TextInput
+              label="To Date"
+              type="date"
+              value={billDateTo}
+              onChange={setBillDateTo}
+            />
             <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
-              <div className="text-xs text-gray-600 font-semibold">Filtered Totals</div>
+              <div className="text-xs text-gray-600 font-semibold">
+                Filtered Totals
+              </div>
               <div className="mt-1 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-500">Sales</span>
-                  <span className="font-semibold">{money(totals.totalSales)}</span>
+                  <span className="font-semibold">
+                    {money(totals.totalSales)}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Paid</span>
@@ -269,8 +298,8 @@ export default function Bills({ data, setData }) {
           </div>
 
           <div className="overflow-auto rounded-2xl border border-gray-200">
-          <table className="min-w-full text-sm">
-            <thead className="bg-gray-50 sticky top-0 z-10">
+            <table className="min-w-full text-sm">
+              <thead className="bg-gray-50 sticky top-0 z-10">
                 <tr className="text-left">
                   <th className="p-3 font-semibold">Date</th>
                   <th className="p-3 font-semibold">Customer</th>
@@ -293,7 +322,7 @@ export default function Bills({ data, setData }) {
                   </tr>
                 ) : (
                   billsComputed.map((b) => (
-                      <tr className="border-t border-gray-100 hover:bg-gray-50">
+                    <tr className="border-t border-gray-100 hover:bg-gray-50">
                       <td className="p-3 whitespace-nowrap">{b.date}</td>
                       <td className="p-3">{b.customerName}</td>
                       <td className="p-3">{b.productName}</td>
@@ -315,79 +344,106 @@ export default function Bills({ data, setData }) {
                           "-"
                         )}
                       </td>
-                      <td className="p-3">{b.paymentStatus}</td>
+                      <td className="p-3">
+                        {(() => {
+                          const tone =
+                            b.paymentStatus === "Paid"
+                              ? "green"
+                              : b.paymentStatus === "Partial"
+                              ? "yellow"
+                              : "red";
+
+                          return <Badge tone={tone}>{b.paymentStatus}</Badge>;
+                        })()}
+                      </td>{" "}
                       <td className="p-3">
                         <div className="flex gap-2">
-                          <SmallButton onClick={() => editBill(b)}>Edit</SmallButton>
-                          <SmallButton variant="danger" onClick={() => deleteBill(b.id)}>
+                          <SmallButton onClick={() => editBill(b)}>
+                            Edit
+                          </SmallButton>
+                          <SmallButton
+                            variant="danger"
+                            onClick={() => deleteBill(b.id)}
+                          >
                             Delete
                           </SmallButton>
                           <SmallButton
-  onClick={() => {
-    const amount = (b.quantity || 0) * (b.unitPrice || 0);
+                            onClick={() => {
+                              const amount =
+                                (b.quantity || 0) * (b.unitPrice || 0);
 
-    // Example: CGST 9% + SGST 9% (edit if needed)
-    const cgstRate = 9;
-    const sgstRate = 9;
-    const cgstAmount = (amount * cgstRate) / 100;
-    const sgstAmount = (amount * sgstRate) / 100;
-    const totalTax = cgstAmount + sgstAmount;
-    const freight = b.freight || 0;
-    const totalAmount = amount + totalTax + freight;
+                              // Example: CGST 9% + SGST 9% (edit if needed)
+                              const cgstRate = 9;
+                              const sgstRate = 9;
+                              const cgstAmount = (amount * cgstRate) / 100;
+                              const sgstAmount = (amount * sgstRate) / 100;
+                              const totalTax = cgstAmount + sgstAmount;
+                              const freight = b.freight || 0;
+                              const totalAmount = amount + totalTax + freight;
 
-    generateInvoicePDF({
-      company: {
-        name: "KSP POLYMERS",
-        address1: "Plot No 233, Sy No: 682,693 to",
-        address2: "697,699,701,702,704 to 709,711 to 717",
-        address3: "TIF MSME Green Industrial Park, Dandu Malkapur(V)",
-        address4: "Choutuppal (M), Yadadri(D), Telangana - 508252",
-        gst: "36BEUPC7238H1Z5",
-        bankAccountName: "KSP POLYMERS",
-        bankName: "UNION BANK",
-        branch: "KOTHAPET",
-        ifsc: "UBIN0810925",
-        accountNo: "0192110100000186",
-      },
-      invoice: {
-        invoiceNo: b.invoiceNumber || `INV-${b.id?.slice(0, 6)}`,
-        invoiceDate: b.date,
-        deliveryDate: b.date,
-        amount,
-        totalAmount,
-      },
-      billTo: {
-        name: b.customerName,
-        address1: b.billToAddress1 || "",
-        address2: b.billToAddress2 || "",
-        cityStateZip: b.billToCityStateZip || "",
-        gst: b.billToGst || "",
-      },
-      shipTo: {
-        name: b.customerName,
-        address1: b.shipToAddress1 || "",
-        address2: b.shipToAddress2 || "",
-        cityStateZip: b.shipToCityStateZip || "",
-      },
-      items: [
-        {
-          item: b.itemCode || "JB",
-          description: b.description || b.productName,
-          hsn: b.hsn || "",
-          qty: b.quantity,
-          rate: b.unitPrice,
-          amount,
-        },
-      ],
-      tax: { cgstRate, sgstRate, cgstAmount, sgstAmount, totalTax },
-      freight,
-      vehicleNo: b.vehicleNo || "",
-    });
-  }}
->
-  PDF Invoice
-</SmallButton>
-
+                              generateInvoicePDF({
+                                company: {
+                                  name: "KSP POLYMERS",
+                                  address1: "Plot No 233, Sy No: 682,693 to",
+                                  address2:
+                                    "697,699,701,702,704 to 709,711 to 717",
+                                  address3:
+                                    "TIF MSME Green Industrial Park, Dandu Malkapur(V)",
+                                  address4:
+                                    "Choutuppal (M), Yadadri(D), Telangana - 508252",
+                                  gst: "36BEUPC7238H1Z5",
+                                  bankAccountName: "KSP POLYMERS",
+                                  bankName: "UNION BANK",
+                                  branch: "KOTHAPET",
+                                  ifsc: "UBIN0810925",
+                                  accountNo: "0192110100000186",
+                                },
+                                invoice: {
+                                  invoiceNo:
+                                    b.invoiceNumber ||
+                                    `INV-${b.id?.slice(0, 6)}`,
+                                  invoiceDate: b.date,
+                                  deliveryDate: b.date,
+                                  amount,
+                                  totalAmount,
+                                },
+                                billTo: {
+                                  name: b.customerName,
+                                  address1: b.billToAddress1 || "",
+                                  address2: b.billToAddress2 || "",
+                                  cityStateZip: b.billToCityStateZip || "",
+                                  gst: b.billToGst || "",
+                                },
+                                shipTo: {
+                                  name: b.customerName,
+                                  address1: b.shipToAddress1 || "",
+                                  address2: b.shipToAddress2 || "",
+                                  cityStateZip: b.shipToCityStateZip || "",
+                                },
+                                items: [
+                                  {
+                                    item: b.itemCode || "JB",
+                                    description: b.description || b.productName,
+                                    hsn: b.hsn || "",
+                                    qty: b.quantity,
+                                    rate: b.unitPrice,
+                                    amount,
+                                  },
+                                ],
+                                tax: {
+                                  cgstRate,
+                                  sgstRate,
+                                  cgstAmount,
+                                  sgstAmount,
+                                  totalTax,
+                                },
+                                freight,
+                                vehicleNo: b.vehicleNo || "",
+                              });
+                            }}
+                          >
+                            PDF Invoice
+                          </SmallButton>
                         </div>
                       </td>
                     </tr>

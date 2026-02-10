@@ -39,7 +39,6 @@ export function SelectInput({ label, value, onChange, options }) {
 export function SmallButton({ children, onClick, variant = "default" }) {
   const base =
     "px-4 py-2.5 rounded-xl text-sm font-semibold transition active:scale-[0.98]";
-
   const styles =
     variant === "primary"
       ? "bg-gray-900 text-white hover:bg-black shadow-sm"

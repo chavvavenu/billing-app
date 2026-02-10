@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import Tabs from "./components/Tabs";
-import Bills from "./components/Bills";
+import BillsPro from "./components/BillsPro";
 import Expenses from "./components/Expenses";
 import Domain from "./components/Domain";
+import AppShell, { StatCard } from "./components/AppShell";
 import { loadData, saveData } from "./utils/storage";
 import { money, toNumber } from "./utils/format";
 
@@ -24,66 +24,17 @@ export default function App() {
   }, [data]);
 
   return (
-<div className="min-h-screen bg-gradient-to-b from-gray-50 to-white text-gray-900">
-      <div className="max-w-6xl mx-auto px-4 py-6 md:py-10">
-        <header className="mb-6 md:mb-10">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold">
-                Plastic Bottle Company – Daily Billing (₹ INR)
-              </h1>
-              <p className="text-sm text-gray-600 mt-1">
-                Bills + Invoice columns • Daily expense sheet • Stored in browser
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-4">
-              <div className="text-xs font-semibold text-gray-600">All-time Snapshot</div>
-              <div className="mt-1 grid grid-cols-3 gap-3 text-sm">
-                <div>
-                  <div className="text-gray-500 text-xs">Sales</div>
-                  <div className="font-semibold">{money(snapshot.salesAll)}</div>
-                </div>
-                <div>
-                  <div className="text-gray-500 text-xs">Expenses</div>
-                  <div className="font-semibold">{money(snapshot.expensesAll)}</div>
-                </div>
-                <div>
-                  <div className="text-gray-500 text-xs">Net</div>
-                  <div className="font-semibold">{money(snapshot.net)}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
-  <div className="rounded-2xl bg-white border border-gray-200 p-4 shadow-sm">
-    <div className="text-xs font-semibold text-gray-500">Total Sales</div>
-    <div className="text-2xl font-bold mt-1">{money(snapshot.salesAll)}</div>
-  </div>
-
-  <div className="rounded-2xl bg-white border border-gray-200 p-4 shadow-sm">
-    <div className="text-xs font-semibold text-gray-500">Total Expenses</div>
-    <div className="text-2xl font-bold mt-1">{money(snapshot.expensesAll)}</div>
-  </div>
-
-  <div className="rounded-2xl bg-white border border-gray-200 p-4 shadow-sm">
-    <div className="text-xs font-semibold text-gray-500">Net Profit</div>
-    <div className="text-2xl font-bold mt-1">{money(snapshot.net)}</div>
-  </div>
-</div>
-
-
-          <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
-        </header>
-
-        {activeTab === "bills" && <Bills data={data} setData={setData} />}
-        {activeTab === "expenses" && <Expenses data={data} setData={setData} />}
-        {activeTab === "domain" && <Domain />}
-
-        <footer className="mt-10 text-xs text-gray-500">
-          Data saved in your browser (localStorage). Export CSV regularly for backup.
-        </footer>
+    <AppShell companyName="KSP POLYMERS" activeTab={activeTab} setActiveTab={setActiveTab}>
+      {/* Dashboard cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <StatCard label="Total Sales" value={money(snapshot.salesAll)} sub="All time" />
+        <StatCard label="Total Expenses" value={money(snapshot.expensesAll)} sub="All time" />
+        <StatCard label="Net Profit" value={money(snapshot.net)} sub="Sales - Expenses" />
       </div>
-    </div>
+
+      {activeTab === "bills" && <BillsPro data={data} setData={setData} />}
+      {activeTab === "expenses" && <Expenses data={data} setData={setData} />}
+      {activeTab === "domain" && <Domain />}
+    </AppShell>
   );
 }

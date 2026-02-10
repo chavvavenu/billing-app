@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Section({ title, subtitle, children, right }) {
+export default function Section({ title, subtitle, right, children }) {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
       <div className="flex items-start justify-between gap-3 px-5 py-4 border-b border-gray-100">
