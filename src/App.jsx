@@ -35,6 +35,7 @@ export default function App() {
       {activeTab === "bills" && <BillsPro data={data} setData={setData} />}
       {activeTab === "expenses" && <Expenses data={data} setData={setData} />}
       {activeTab === "domain" && <Domain />}
+
     </AppShell>
   );
 }
